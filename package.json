@@ -2,10 +2,10 @@
   "name": "citypop.in",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/main.js",
   "scripts": {
     "push-db": "prisma db push",
-    "build": "prisma generate && echo \"Building TypeScript...\" && tsc",
+    "build": "yarn prisma generate && echo \"Building TypeScript...\" && yarn tsc",
     "dev": "nodemon --exec \"prisma generate && ts-node main.ts\" -e \"html ts css\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
