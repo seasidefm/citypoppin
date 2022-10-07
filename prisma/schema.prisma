@@ -20,10 +20,11 @@ model User {
 }
 
 model ShortLink {
-  id     String @id @default(auto()) @map("_id") @db.ObjectId
-  slug   String @unique
-  linkTo String
-  clicks Int    @default(0)
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  slug     String  @unique
+  linkTo   String
+  clicks   Int     @default(0)
+  isActive Boolean @default(true)
 
   owner   User   @relation(fields: [ownerId], references: [id])
   ownerId String
