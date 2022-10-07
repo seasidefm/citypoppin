@@ -58,6 +58,10 @@ app.get('/', (req, res) => {
   res.render('landing');
 });
 
+app.get('/health', (req, res) => {
+  res.send('ok');
+});
+
 app.post('/users/new', async (req, res) => {
   try {
     const user = await prisma.user.create({
