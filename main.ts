@@ -1,6 +1,8 @@
 import express from 'express';
 import { engine } from 'express-handlebars';
 
+import { PrismaClient } from '@prisma/client';
+
 console.log('🏖 Starting server...');
 
 const app = express();
@@ -16,6 +18,10 @@ app.set('views', './views');
 
 app.get('/', (req, res) => {
   res.render('landing');
+});
+
+app.get('/links', async (req, res) => {
+  res.send('ok!');
 });
 
 const port = process.env.PORT || 5000;
