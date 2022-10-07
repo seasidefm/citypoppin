@@ -23,6 +23,7 @@ model ShortLink {
   id     String @id @default(auto()) @map("_id") @db.ObjectId
   slug   String @unique
   linkTo String
+  clicks Int    @default(0)
 
   owner   User   @relation(fields: [ownerId], references: [id])
   ownerId String
