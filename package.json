@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "push-db": "prisma db push",
     "build": "prisma generate && echo \"Building TypeScript...\" && tsc",
     "dev": "nodemon --exec \"prisma generate && ts-node main.ts\" -e \"html ts css\"",
     "test": "echo \"Error: no test specified\" && exit 1"
