@@ -1,0 +1,28 @@
+<div>
+    <h1 class="uk-text-secondary">Your Links</h1>
+    <p class="uk-text-lead">These are all of your links on City Poppin'.</p>
+    <table class="uk-table uk-table-divider">
+        <thead>
+            <tr>
+                <th>Short URL</th>
+                <th>Long URL</th>
+<!--                <th>Created</th>-->
+<!--                <th>Updated</th>-->
+                <th>Clicks</th>
+                <th>Active</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each links}}
+            <tr>
+                <td><a href="/{{shortUrl}}">{{shortUrl}}</a></td>
+                <td><a href="{{longUrl}}">{{longUrl}}</a></td>
+<!--                <td>{{createdAt}}</td>-->
+<!--                <td>{{updatedAt}}</td>-->
+                <td>{{clicks}}</td>
+                <td>{{active}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>

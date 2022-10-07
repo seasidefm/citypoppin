@@ -22,3 +22,9 @@ export const validateJwt = (token: string) => {
 
   return jwt.verify(token, process.env.JWT_SECRET);
 };
+
+// Get the user from the JWT token
+export const getUserFromJwt = (token: string) => {
+  const decoded = validateJwt(token);
+  return decoded as User;
+};

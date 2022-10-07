@@ -1,9 +1,10 @@
 import express from 'express';
 import { engine } from 'express-handlebars';
-
+import cookieParser from 'cookie-parser';
 import { PrismaClient } from '@prisma/client';
+
 import { hashPassword } from './lib/hashPassword';
-import { getJwt } from './lib/getJwt';
+import { getJwt, getUserFromJwt } from './lib/getJwt';
 
 console.log('🏖 Starting server...');
 
@@ -12,6 +13,8 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded());
+app.use(express.static('public'));
+app.use(cookieParser());
 
 // Handlebars engine
 app.engine(
@@ -53,9 +56,27 @@ app.post('/users/new', async (req, res) => {
 });
 
 app.get('/links', async (req, res) => {
-  // const prisma = new PrismaClient();
+  try {
+    const cookie = req.cookies['poppin-tk'];
+    const prisma = new PrismaClient();
 
-  res.send('ok!');
+    if (!cookie) {
+      res.redirect('/');
+    } else {
+      const user = getUserFromJwt(cookie);
+
+      const links = await prisma.shortLink.findMany({
+        where: {
+          ownerId: user.id,
+        },
+      });
+
+      res.render('links', { links });
+    }
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(400);
+  }
 });
 
 const port = process.env.PORT || 5000;
