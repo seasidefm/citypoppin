@@ -7,7 +7,7 @@ import * as Sentry from '@sentry/node';
 import { captureException } from '@sentry/node';
 import * as Tracing from '@sentry/tracing';
 
-import { hashPassword } from './lib/hashPassword';
+import { comparePassword, hashPassword } from './lib/hashPassword';
 import { getJwt, getUserFromJwt } from './lib/getJwt';
 import { getUrlId } from './lib/getUrlId';
 
@@ -61,11 +61,36 @@ const prisma = new PrismaClient();
 
 // Routes
 app.get('/', (req, res) => {
-  res.render('landing');
+  res.render('landing', { error: req.query.error });
 });
 
 app.get('/health', (req, res) => {
   res.send('ok');
+});
+
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+  const user = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+
+  // Check if user exists and password is correct
+  const passwordMatch = await comparePassword(password, user?.password || '');
+  if (!passwordMatch || !user) {
+    res.redirect('/?error=login');
+    return;
+  }
+
+  // User is authenticated
+  const jwt = getJwt(user);
+  res.cookie('jwt', jwt, {
+    expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30), // 30 days
+    httpOnly: true,
+  });
+
+  res.redirect('/links');
 });
 
 app.post('/users/new', async (req, res) => {

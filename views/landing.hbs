@@ -1,15 +1,23 @@
-<div style="height: 100vh" class="uk-container uk-container-large uk-background-primary">
-    <h1 class="uk-text-secondary">What's city poppin'?</h1>
-    <p class="uk-text-lead">The official URL shortening service for SeasideFM.</p>
-    <form method="post" action="/users/new">
-        <label>
-            <input class="uk-input" placeholder="Email" name="email" type="email"/>
-        </label>
-        <label>
-            <input class="uk-input" placeholder="Password" name="password" type="password" />
-        </label>
-        <button type="submit">
-            Login
-        </button>
-    </form>
+<div style="height: 100vh" class="uk-background-primary uk-padding-large">
+    <div class="uk-container uk-container-small">
+        <h1 class="uk-text-secondary">What's city poppin'?</h1>
+        <p class="uk-text-lead">The official URL shortening service for SeasideFM.</p>
+        <form method="post" action="/login">
+            {{#if (eq error "login")}}
+                <div class="uk-alert-danger" uk-alert>
+                    <a class="uk-alert-close" uk-close></a>
+                    <p>Error: Invalid username or password!</p>
+                </div>
+            {{/if}}
+            <label>
+                <input class="uk-input uk-margin-bottom" placeholder="Email" name="email" type="email"/>
+            </label>
+            <label>
+                <input class="uk-input uk-margin-bottom" placeholder="Password" name="password" type="password" />
+            </label>
+            <button type="submit" class="uk-button">
+                Login
+            </button>
+        </form>
+    </div>
 </div>
