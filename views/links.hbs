@@ -1,28 +1,88 @@
 <div>
     <h1 class="uk-text-secondary">Your Links</h1>
     <p class="uk-text-lead">These are all of your links on City Poppin'.</p>
-    <table class="uk-table uk-table-divider">
-        <thead>
+    {{#if (eq error "linkTo") }}
+        <div class="uk-alert-danger" uk-alert>
+            <a class="uk-alert-close" uk-close></a>
+            <p>Error: Please add a target link when creating a short link!</p>
+        </div>
+    {{/if}}
+
+    <!-- An error with the slug -->
+    {{#if (eq error "slugInvalid")}}
+        <div class="uk-alert-danger" uk-alert>
+            <a class="uk-alert-close" uk-close></a>
+            <p>Error: That slug is invalid, please try another!</p>
+        </div>
+    {{/if}}
+
+    {{#if success}}
+        <div class="uk-alert-success" uk-alert>
+            <a class="uk-alert-close" uk-close></a>
+            <p>Success: Your link has been created! '{{success}}'</p>
+        </div>
+    {{/if}}
+    {{#if deleted}}
+        <div class="uk-alert-success" uk-alert>
+            <a class="uk-alert-close" uk-close></a>
+            <p>Success: Your link has been deleted!</p>
+        </div>
+    {{/if}}
+    <button class="uk-button uk-button-default" uk-toggle="target: #new-link; animation: uk-animation-fade">Add a link</button>
+
+    <!-- Modal -->
+    <div id="new-link" uk-modal>
+        <div class="uk-modal-dialog uk-modal-body">
+            <form method="post">
+                <h3 class="uk-card-title">Create a new short link</h3>
+
+                <!-- Long link -->
+                <label>
+                    <input class="uk-input" placeholder="Your long link here..." name="linkTo" type="text"/>
+                </label>
+
+                <!-- Short link (desired slug) -->
+                <div class="uk-flex uk-flex-middle uk-margin-top uk-margin-bottom">
+                    <p class="uk-text-secondary uk-margin-right" style="margin-bottom: 0">citypop.in/</p>
+                    <label>
+                        <input class="uk-input" placeholder="Desired URL Suffix (optional)" name="slug" type="text" />
+                    </label>
+                </div>
+
+                <!-- Modal actions -->
+                <div class="uk-modal-footer uk-text-right">
+                    <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+                    <button class="uk-button uk-button-primary" type="submit">Create</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+    <div>
+        <table class="uk-table uk-table-divider">
+            <thead>
             <tr>
                 <th>Short URL</th>
                 <th>Long URL</th>
-<!--                <th>Created</th>-->
-<!--                <th>Updated</th>-->
+                <!--                <th>Created</th>-->
+                <!--                <th>Updated</th>-->
                 <th>Clicks</th>
                 <th>Active</th>
             </tr>
-        </thead>
-        <tbody>
+            </thead>
+            <tbody>
             {{#each links}}
-            <tr>
-                <td><a href="/{{shortUrl}}">{{shortUrl}}</a></td>
-                <td><a href="{{longUrl}}">{{longUrl}}</a></td>
-<!--                <td>{{createdAt}}</td>-->
-<!--                <td>{{updatedAt}}</td>-->
-                <td>{{clicks}}</td>
-                <td>{{active}}</td>
-            </tr>
+                <tr>
+                    <td><a href="/{{slug}}">{{slug}}</a></td>
+                    <td><a href="{{linkTo}}">{{linkTo}}</a></td>
+                    <!--                <td>{{createdAt}}</td>-->
+                    <!--                <td>{{updatedAt}}</td>-->
+                    <td>{{clicks}}</td>
+                    <td>{{isActive}}</td>
+                </tr>
             {{/each}}
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
+
 </div>

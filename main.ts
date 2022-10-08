@@ -9,6 +9,7 @@ import * as Tracing from '@sentry/tracing';
 
 import { hashPassword } from './lib/hashPassword';
 import { getJwt, getUserFromJwt } from './lib/getJwt';
+import { getUrlId } from './lib/getUrlId';
 
 console.log('🏖 Starting server...');
 
@@ -45,11 +46,16 @@ app.engine(
   '.hbs',
   engine({
     extname: '.hbs',
+    helpers: {
+      // Helper to check if a value is equal to another
+      eq: (a: string, b: string) => a === b,
+    },
   })
 );
 app.set('view engine', '.hbs');
 app.set('views', './views');
 
+// Handlebars helpers
 // global setup
 const prisma = new PrismaClient();
 
@@ -84,6 +90,40 @@ app.post('/users/new', async (req, res) => {
   }
 });
 
+app.post('/links', async (req, res) => {
+  try {
+    if (req.body.linkTo === '') {
+      return res.redirect('/links?error=linkTo');
+    }
+
+    const user = await getUserFromJwt(req.cookies['poppin-tk']);
+    const link = await prisma.shortLink.create({
+      data: {
+        slug: req.body.slug || getUrlId(),
+        linkTo: req.body.linkTo,
+        owner: {
+          connect: {
+            id: user.id,
+          },
+        },
+      },
+    });
+
+    console.log('🔗 Created link ' + link.slug + ' for user ' + user.email);
+
+    res.redirect('/links?success=' + link.slug);
+  } catch (e) {
+    console.error(e);
+    captureException(e);
+    if ((e as Error).message.includes('Unique constraint failed')) {
+      return res.redirect('/links?error=slugInvalid');
+    }
+
+    // TODO: handle other errors
+    res.sendStatus(400);
+  }
+});
+
 app.get('/links', async (req, res) => {
   try {
     const cookie = req.cookies['poppin-tk'];
@@ -99,7 +139,39 @@ app.get('/links', async (req, res) => {
         },
       });
 
-      res.render('links', { links });
+      res.render('links', {
+        links,
+        error: req.query.error,
+        success: req.query.success,
+      });
+    }
+  } catch (e) {
+    console.error(e);
+    captureException(e);
+    res.sendStatus(400);
+  }
+});
+
+app.get('/:slug', async (req, res) => {
+  try {
+    const link = await prisma.shortLink.update({
+      where: {
+        slug: req.params.slug,
+      },
+      select: {
+        linkTo: true,
+      },
+      data: {
+        clicks: {
+          increment: 1,
+        },
+      },
+    });
+
+    if (!link) {
+      res.sendStatus(404);
+    } else {
+      res.redirect(link.linkTo);
     }
   } catch (e) {
     console.error(e);
