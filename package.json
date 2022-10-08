@@ -7,7 +7,8 @@
     "push-db": "prisma db push",
     "build": "yarn prisma generate && echo \"Building TypeScript...\" && yarn tsc",
     "dev": "nodemon --exec \"prisma generate && ts-node main.ts\" -e \"html ts css\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node dist/main.js"
   },
   "keywords": [],
   "author": "",
