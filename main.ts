@@ -68,6 +68,57 @@ app.get('/health', (req, res) => {
   res.send('ok');
 });
 
+app.get('/signup', (req, res) => {
+  res.render('signup', { error: req.query.error });
+});
+
+app.post('/signup', async (req, res) => {
+  const { email, password, invitationCode } = req.body;
+  const hashedPassword = await hashPassword(password);
+  try {
+    const invite = await prisma.invitationCode.findUnique({
+      where: {
+        code: invitationCode,
+      },
+    });
+
+    // check if invitation code is valid
+    if (!invite || invite?.isUsed) {
+      res.redirect('/signup?error=invalid');
+      return;
+    }
+
+    // Create user
+    await prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+      },
+    });
+
+    // Update invitation code
+    await prisma.invitationCode.update({
+      where: {
+        code: invitationCode,
+      },
+      data: {
+        isUsed: true,
+      },
+    });
+
+    res.cookie('jwt', getJwt(email), {
+      httpOnly: true,
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30), // 30 days
+    });
+    res.redirect('/links');
+  } catch (e) {
+    console.error(e);
+    captureException(e);
+
+    res.redirect('/signup?error=invalid');
+  }
+});
+
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
   const user = await prisma.user.findUnique({
@@ -91,28 +142,6 @@ app.post('/login', async (req, res) => {
   });
 
   res.redirect('/links');
-});
-
-app.post('/users/new', async (req, res) => {
-  try {
-    const user = await prisma.user.create({
-      data: {
-        email: req.body.email,
-        password: await hashPassword(req.body.password),
-      },
-    });
-
-    res
-      .cookie('poppin-tk', getJwt(user), {
-        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30), // 30 days
-        httpOnly: true,
-      })
-      .redirect('/links');
-  } catch (e) {
-    console.error(e);
-    captureException(e);
-    res.sendStatus(400);
-  }
 });
 
 app.post('/links', async (req, res) => {

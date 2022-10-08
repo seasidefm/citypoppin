@@ -29,3 +29,9 @@ model ShortLink {
   owner   User   @relation(fields: [ownerId], references: [id])
   ownerId String
 }
+
+model InvitationCode {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  code     String  @unique
+  isUsed   Boolean @default(false)
+}

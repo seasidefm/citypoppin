@@ -1,0 +1,36 @@
+<!-- Create a user signup page -->
+<div class="uk-padding-large">
+    <div class="uk-container uk-container-small">
+        <h1 class="uk-text-secondary">What's city poppin'?</h1>
+        <p class="uk-text-lead">Create an account here! You'll be able to make citypop.in links in no time.</p>
+        <p class="uk-text-meta">Note: You currently need an invitation code to use this site :)</p>
+        <form method="post" action="/signup">
+            {{#if (eq error "signup")}}
+                <div class="uk-alert-danger" uk-alert>
+                    <a class="uk-alert-close" uk-close></a>
+                    <p>Error: Invalid username or password!</p>
+                </div>
+            {{/if}}
+            {{#if (eq error "invalid")}}
+                <div class="uk-alert-danger" uk-alert>
+                    <a class="uk-alert-close" uk-close></a>
+                    <p>Error: Invalid email or invitation code!</p>
+                </div>
+            {{/if}}
+            <label>
+                <input class="uk-input uk-margin-bottom" placeholder="Email" name="email" type="email"/>
+            </label>
+            <label>
+                <input class="uk-input uk-margin-bottom" placeholder="Password" name="password" type="password" />
+            </label>
+            <label>
+                <input class="uk-input uk-margin-bottom" placeholder="Invitation Code" name="invitationCode" type="text" />
+            </label>
+            <button type="submit" class="uk-button">
+                Signup
+            </button>
+            <a href="/" class="uk-link uk-link-text uk-text-secondary">Already have an account?</a>
+        </form>
+    </div>
+
+</div>
