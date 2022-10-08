@@ -15,6 +15,9 @@ console.log('🏖 Starting server...');
 
 const app = express();
 
+// Constants
+const TOKEN_NAME = 'citypoppin-token';
+
 // Sentry
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
@@ -89,7 +92,7 @@ app.post('/signup', async (req, res) => {
     }
 
     // Create user
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
@@ -106,7 +109,7 @@ app.post('/signup', async (req, res) => {
       },
     });
 
-    res.cookie('jwt', getJwt(email), {
+    res.cookie(TOKEN_NAME, getJwt(user), {
       httpOnly: true,
       expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30), // 30 days
     });
@@ -136,7 +139,7 @@ app.post('/login', async (req, res) => {
 
   // User is authenticated
   const jwt = getJwt(user);
-  res.cookie('jwt', jwt, {
+  res.cookie(TOKEN_NAME, jwt, {
     expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30), // 30 days
     httpOnly: true,
   });
@@ -150,7 +153,8 @@ app.post('/links', async (req, res) => {
       return res.redirect('/links?error=linkTo');
     }
 
-    const user = await getUserFromJwt(req.cookies['poppin-tk']);
+    const user = await getUserFromJwt(req.cookies[TOKEN_NAME]);
+    console.log(user);
     const link = await prisma.shortLink.create({
       data: {
         slug: req.body.slug || getUrlId(),
@@ -180,7 +184,7 @@ app.post('/links', async (req, res) => {
 
 app.get('/links', async (req, res) => {
   try {
-    const cookie = req.cookies['poppin-tk'];
+    const cookie = req.cookies[TOKEN_NAME];
 
     if (!cookie) {
       res.redirect('/');
