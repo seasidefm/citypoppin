@@ -11,6 +11,10 @@ import { comparePassword, hashPassword } from './lib/hashPassword';
 import { getJwt, getUserFromJwt } from './lib/getJwt';
 import { getUrlId } from './lib/getUrlId';
 
+import { config } from 'dotenv';
+
+config();
+
 console.log('🏖 Starting server...');
 
 const app = express();
