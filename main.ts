@@ -62,10 +62,6 @@ app.engine(
 app.set('view engine', '.hbs');
 app.set('views', './views');
 
-// Handlebars helpers
-// global setup
-const prisma = new PrismaClient();
-
 // Routes
 app.get('/', (req, res) => {
   res.render('landing', { error: req.query.error });
@@ -80,6 +76,7 @@ app.get('/signup', (req, res) => {
 });
 
 app.post('/signup', async (req, res) => {
+  const prisma = new PrismaClient();
   const { email, password, invitationCode } = req.body;
   const hashedPassword = await hashPassword(password);
   try {
@@ -127,6 +124,7 @@ app.post('/signup', async (req, res) => {
 });
 
 app.post('/login', async (req, res) => {
+  const prisma = new PrismaClient();
   const { email, password } = req.body;
   const user = await prisma.user.findUnique({
     where: {
@@ -152,6 +150,7 @@ app.post('/login', async (req, res) => {
 });
 
 app.post('/links', async (req, res) => {
+  const prisma = new PrismaClient();
   try {
     if (req.body.linkTo === '') {
       return res.redirect('/links?error=linkTo');
@@ -187,6 +186,7 @@ app.post('/links', async (req, res) => {
 });
 
 app.get('/links', async (req, res) => {
+  const prisma = new PrismaClient();
   try {
     const cookie = req.cookies[TOKEN_NAME];
 
@@ -215,6 +215,7 @@ app.get('/links', async (req, res) => {
 });
 
 app.get('/:slug', async (req, res) => {
+  const prisma = new PrismaClient();
   try {
     const link = await prisma.shortLink.update({
       where: {
