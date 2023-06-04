@@ -63,8 +63,19 @@ app.set('view engine', '.hbs');
 app.set('views', './views');
 
 // Routes
-app.get('/', (req, res) => {
-  res.render('landing', { error: req.query.error });
+app.get('/', async (req, res) => {
+  try {
+    if (req.cookies[TOKEN_NAME]) {
+      const user = await getUserFromJwt(req.cookies[TOKEN_NAME]);
+      res.redirect(307, '/links')
+    } else {
+      // If no user just render the login page
+      res.render('landing', { error: req.query.error });
+    }
+  } catch (e) {
+    // Always render landing in case something breaks
+    res.render('landing', { error: req.query.error });
+  }
 });
 
 app.get('/health', (req, res) => {
