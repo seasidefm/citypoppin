@@ -1,0 +1,4 @@
+node_modules
+dist
+nginx.conf
+ecosystem.config.js
