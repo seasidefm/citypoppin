@@ -1,7 +1,11 @@
-FROM node:20-slim
+FROM node:18-slim
 
 # Create app directory
 WORKDIR /app
+
+# install openssl
+
+RUN apt-get update && apt-get install -y openssl
 
 # Install app dependencies
 COPY package.json yarn.lock ./
